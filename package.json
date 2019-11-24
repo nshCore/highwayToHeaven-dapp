@@ -1,0 +1,16 @@
+{
+  "name": "oneticket",
+  "version": "0.0.0-alpha",
+  "description": "the stairway to heaven",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "openzeppelin-solidity": "^2.4.0",
+    "@openzeppelin/test-helpers": "^0.5.4"
+  },
+  "author": "nshcore <nshcore@protonmail.com>",
+  "license": "MIT"
+}

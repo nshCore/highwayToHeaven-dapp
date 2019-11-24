@@ -1,0 +1,25 @@
+pragma solidity ^0.5.11;
+
+import "../contracts/HeavenTicket.sol";
+import "../node_modules/truffle/build/Assert.sol";
+
+contract TestHeavenTicket {
+
+  // function testOwnerGetsInitalBalance() public {
+
+  //   uint256 expected = 21000000;
+
+  //   HeavenTicket ticketContract = new HeavenTicket('HeavenTicket', 'HT', 0, expected, 1);
+
+  //   Assert.equal(ticketContract.balanceOf(msg.sender), expected, "Owner should have 21000000 tickets initially");
+  // }
+
+  function testGetTicketPrice() public {
+
+    uint256 expected = 1;
+
+    HeavenTicket ticketContract = new HeavenTicket('HeavenTicket', 'HT', 0, 1, expected);
+
+    Assert.equal(ticketContract.getTicketPrice(), expected, "should be 1 ether");
+  }
+}
