@@ -30,18 +30,18 @@ contract HeavenTicket is Ownable, ERC20, ERC20Detailed
 
     mapping(address => Guest) public guestList;
 
-    address[] public patreons;
+    address[] public patrons;
     // array of guests that are currently in heaven
     mapping (address => Guest) public heavenList;
 
     // fired when guest buys ticket
     event TicketBought(address guest);
 
-    // fired when guest is added to list
-    event GuestAdded(address guest);
+    // fired when guest enters heaven
+    event EnteredHeaven(address guest);
 
-    // fired on revert
-    event RevertEvent(string errMsg);
+    // fired when guest leaves heaven
+    event LeftHeaven(address guest);
 
     // Pass ctor params for contract params @SEE migrations/2_deploy_contracts
     constructor
@@ -59,10 +59,10 @@ contract HeavenTicket is Ownable, ERC20, ERC20Detailed
         require(_initalSupply > 0, "﴾͡๏̯͡๏﴿ O'RLY?");
 
         // calc total supply
-        uint256 totalSupply_ = _initalSupply.mul(18 ** uint256(_decimals));
+        uint256 totalSupply_ = _initalSupply.mul(10 ** uint256(_decimals));
 
         // ticket price
-        ticketPrice = _ticketPrice;
+        ticketPrice = _ticketPrice.mul(10 ** uint256(_decimals));
 
         // mint inital supply for contract owner
         _mint(msg.sender, totalSupply_);
@@ -100,12 +100,11 @@ contract HeavenTicket is Ownable, ERC20, ERC20Detailed
      * User must be in guestList map
      * User must be removed from guests arr
      * user must burn their ticket to enter
-     * must account number of patreons in heaven
+     * must account number of patrons in heaven
      */
     function enterHeaven(address _senderAddress) public payable returns(bool)
     {
         require(isGuestOnList(_senderAddress), "heavens pretty exclusive, buy a ticket");
-        _burn(_senderAddress, 1);
 
         uint rowToDelete = guestList[_senderAddress].guestId;
         address keyToMove = guests[guests.length-1];
@@ -113,21 +112,27 @@ contract HeavenTicket is Ownable, ERC20, ERC20Detailed
         guestList[keyToMove].guestId = rowToDelete;
         guests.length--;
 
-        heavenList[_senderAddress].guestId = patreons.push(_senderAddress) - 1;
+        heavenList[_senderAddress].guestId = patrons.push(_senderAddress) - 1;
 
+        // mint 1 token for the sender
+        _burn(_senderAddress, 1);
+
+        emit EnteredHeaven(_senderAddress);
         return true;
     }
 
     function leaveHeaven(address _senderAddress) public payable returns(bool)
     {
-        require(isPateron(_senderAddress), "can only leave if your in");
+        require(isPatron(_senderAddress), "can only leave if your in");
 
         uint rowToDelete = heavenList[_senderAddress].guestId;
-        address keyToMove = patreons[patreons.length-1];
-        patreons[rowToDelete] = keyToMove;
+        address keyToMove = patrons[patrons.length-1];
+        patrons[rowToDelete] = keyToMove;
         heavenList[keyToMove].guestId = rowToDelete;
-        patreons.length--;
+        patrons.length--;
 
+        emit LeftHeaven(_senderAddress);
+        return true;
     }
 
     // Is address in state array
@@ -145,18 +150,18 @@ contract HeavenTicket is Ownable, ERC20, ERC20Detailed
         return guests.length;
     }
 
-    function isPateron(address _guestAddress) public view returns(bool isFoSho)
+    function isPatron(address _guestAddress) public view returns(bool isFoSho)
     {
-        if(patreons.length == 0)
+        if(patrons.length == 0)
         {
             return false;
         }
-        return (patreons[heavenList[_guestAddress].guestId] == _guestAddress);
+        return (patrons[heavenList[_guestAddress].guestId] == _guestAddress);
     }
 
-    function getPateronCount() public view returns(uint256)
+    function getPatronCount() public view returns(uint256)
     {
-        return patreons.length;
+        return patrons.length;
     }
 
     // provide a way of destorying the contract to only the owner

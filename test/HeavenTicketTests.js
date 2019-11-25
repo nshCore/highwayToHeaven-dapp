@@ -1,5 +1,5 @@
 const assert = require("chai").assert;
-const { expectRevert } = require('@openzeppelin/test-helpers');
+const { expectRevert, expectEvent } = require('@openzeppelin/test-helpers');
 const HeavenTicket = artifacts.require("HeavenTicket");
 
 contract("HeavenTicket", accounts => {
@@ -42,7 +42,7 @@ contract("HeavenTicket", accounts => {
   });
 
   it("user should be able to buy token", async () => {
-    const receipt = await ht.buyTicket({ from: accounts[1], value: 1 ** 18 })
+    const receipt = await ht.buyTicket({ from: accounts[1], value: 1 ** 10 })
     const balance = await ht.balanceOf(accounts[1]);
     assert.equal(balance, 1, "user should have 1 ticket");
     assert.notEqual(balance, 2, "user should not have 2 ticket");
@@ -69,7 +69,7 @@ contract("HeavenTicket", accounts => {
   it("owner should not be able to buy token", async () => {
 
     await expectRevert(
-      ht.buyTicket({ from: accounts[0], value: 1 ** 18 }),
+      ht.buyTicket({ from: accounts[0], value: 1 ** 10 }),
       "sender can't be contract owner"
     );
 
@@ -80,25 +80,25 @@ contract("HeavenTicket", accounts => {
   });
 
   it("user buying ticket should be on guestlist", async () => {
-    await ht.buyTicket({ from: accounts[1], value: 1 ** 18 })
+    await ht.buyTicket({ from: accounts[1], value: 1 ** 10 })
     assert.equal(await ht.isGuestOnList(accounts[1]), true);
   });
 
   it("user buying ticket should have 1 token", async () => {
-    await ht.buyTicket({ from: accounts[1], value: 1 ** 18 })
+    await ht.buyTicket({ from: accounts[1], value: 1 ** 10 })
     assert.equal(await ht.balanceOf(accounts[1]), "1");
   });
 
   it("user buying ticket should increase total supply by 1", async () => {
     let initialSupply = await ht.totalSupply();
-    await ht.buyTicket({ from: accounts[1], value: 1 ** 18 })
+    await ht.buyTicket({ from: accounts[1], value: 1 ** 10 })
     const currentSupply = await ht.totalSupply();
     assert.notEqual(currentSupply, initialSupply);
     assert.equal(currentSupply, ++initialSupply);
   });
 
   it("buying ticket increases guest count", async () => {
-    await ht.buyTicket({ from: accounts[1], value: 1 ** 18 })
+    await ht.buyTicket({ from: accounts[1], value: 1 ** 10 })
     const guestCount = await ht.getGuestCount();
     assert.equal(guestCount, 1);
   });
@@ -108,10 +108,10 @@ contract("HeavenTicket", accounts => {
   });
 
   it("user cant buy duplicate tickets", async () => {
-    await ht.buyTicket({ from: accounts[1], value: 1 ** 18 })
+    await ht.buyTicket({ from: accounts[1], value: 1 ** 10 })
     assert.equal(await ht.isGuestOnList(accounts[1]), true);
     await expectRevert(
-      ht.buyTicket({ from: accounts[1], value: 1 ** 18 }),
+      ht.buyTicket({ from: accounts[1], value: 1 ** 10 }),
       "you can only go to heaven once"
     );
   })
@@ -123,7 +123,7 @@ contract("HeavenTicket", accounts => {
   });
 
   it("entering heaven removes users ticket", async () => {
-    await ht.buyTicket({ from: accounts[1], value: 1 ** 18 });
+    await ht.buyTicket({ from: accounts[1], value: 1 ** 10 });
     await ht.enterHeaven(accounts[1]);
     assert.equal(await ht.balanceOf(accounts[1]), "0");
   });
@@ -145,8 +145,8 @@ contract("HeavenTicket", accounts => {
 
   it("two users buying tickets and one going to heaven increases suuply by 1", async () => {
     let initialSupply = await ht.totalSupply();
-    await ht.buyTicket({ from: accounts[1], value: 1 ** 18 });
-    await ht.buyTicket({ from: accounts[2], value: 1 ** 18 });
+    await ht.buyTicket({ from: accounts[1], value: 1 ** 10 });
+    await ht.buyTicket({ from: accounts[2], value: 1 ** 10 });
 
     let currentSupply = await ht.totalSupply();
 
@@ -162,25 +162,50 @@ contract("HeavenTicket", accounts => {
   it("entering heaven adds user to paterons", async () => {
     await ht.buyTicket({ from: accounts[1], value: 1 ** 18 });
     await ht.enterHeaven(accounts[1]);
-    assert.equal(await ht.isPateron(accounts[1]), true);
-    assert.notEqual(await ht.isPateron(accounts[1]), false);
+    assert.equal(await ht.isPatron(accounts[1]), true);
+    assert.notEqual(await ht.isPatron(accounts[1]), false);
   });
 
   it("entering heaven increases pateron count", async () => {
-    await ht.buyTicket({ from: accounts[1], value: 1 ** 18 })
+    await ht.buyTicket({ from: accounts[1], value: 1 ** 10 })
     await ht.enterHeaven(accounts[1]);
-    const patreonCount = await ht.getPateronCount();
+    const patreonCount = await ht.getPatronCount();
     assert.equal(patreonCount, 1);
   });
 
   it("leaving heaven removes user from paterons", async () => {
-    await ht.buyTicket({ from: accounts[1], value: 1 ** 18 });
-    await ht.buyTicket({ from: accounts[2], value: 1 ** 18 });
+    await ht.buyTicket({ from: accounts[1], value: 1 ** 10 });
+    await ht.buyTicket({ from: accounts[2], value: 1 ** 10 });
     await ht.enterHeaven(accounts[1]);
     await ht.enterHeaven(accounts[2]);
-    assert.equal(await ht.isPateron(accounts[1]), true);
-    assert.equal(await ht.isPateron(accounts[2]), true);
+    assert.equal(await ht.isPatron(accounts[1]), true);
+    assert.equal(await ht.isPatron(accounts[2]), true);
     await ht.leaveHeaven(accounts[1]);
-    assert.equal(await ht.isPateron(accounts[1]), false);
+    assert.equal(await ht.isPatron(accounts[1]), false);
   });
+
+  it("should emit TicketBought when buying a ticket", async () => {
+    const receipt = await ht.buyTicket({ from: accounts[1], value: 1 ** 18 });
+    expectEvent(receipt, 'TicketBought', {
+      guest: accounts[1]
+    });
+  });
+
+  it("should emit EnteredHeaven when entering heaven", async () => {
+    await ht.buyTicket({ from: accounts[1], value: 1 ** 18 });
+    const receipt = await ht.enterHeaven(accounts[1]);
+    expectEvent(receipt, 'EnteredHeaven', {
+      guest: accounts[1]
+    });
+  });
+
+  it("should emit LeftHeaven when leaving heaven", async () => {
+    await ht.buyTicket({ from: accounts[1], value: 1 ** 18 });
+    await ht.enterHeaven(accounts[1]);
+    const receipt = await ht.leaveHeaven(accounts[1]);
+    expectEvent(receipt, 'LeftHeaven', {
+      guest: accounts[1]
+    });
+  });
+
 });

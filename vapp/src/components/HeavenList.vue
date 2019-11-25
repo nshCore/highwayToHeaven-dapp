@@ -2,7 +2,7 @@
     <div v-if="isDrizzleInitialized">
         <drizzle-contract
             contractName="HeavenTicket"
-            method="getPateronCount"
+            method="getPatronCount"
             label="People in heaven"
         /> 
     </div>   

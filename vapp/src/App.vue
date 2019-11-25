@@ -1,7 +1,6 @@
 <template>
   <div v-if="isDrizzleInitialized" id="app">
     <img id="buddyChrist" alt="Vue logo" src="./assets/buddyChrist.png" />
-
     <div class="section">
       <h2>Highway To Heaven!!</h2>
       <token-supply />
@@ -10,21 +9,14 @@
       <heaven-list />
       <balance-of />
       <is-guest />
-      <is-pateron />
+      <is-patron />
       <ticket-price />
       <buy-ticket />
     </div>
-
     <div class="section">
-      <drizzle-account units="Ether" :precision="2" /> 
-      <drizzle-contract-form
-        contractName="HeavenTicket"
-        method="transfer"
-        :placeholders="placeholders"
-      />      
+      <drizzle-account units="Ether" :precision="2" />   
     </div>
   </div>
-
   <div v-else>Loading...</div>
 </template>
 
@@ -32,7 +24,7 @@
 import { mapGetters } from 'vuex';
 
 import IsGuest from './components/IsGuest';
-import IsPateron from './components/IsPateron';
+import IsPatron from './components/IsPatron';
 import BuyTicket from './components/BuyTicket';
 import BalanceOf from './components/BalanceOf';
 import GuestList from './components/GuestList';
@@ -45,7 +37,7 @@ export default {
   name: 'app',
   components: {
     IsGuest,
-    IsPateron,
+    IsPatron,
     BuyTicket,
     GuestList,
     BalanceOf,
@@ -56,10 +48,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters('drizzle', ['isDrizzleInitialized']),
-    placeholders() {
-      return ['To Address', 'Amount to Send']
-    }    
+    ...mapGetters('drizzle', ['isDrizzleInitialized']),  
   }
 }
 </script>
