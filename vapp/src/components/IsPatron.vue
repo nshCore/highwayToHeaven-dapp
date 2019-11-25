@@ -2,7 +2,7 @@
     <div v-if="isDrizzleInitialized">
         <drizzle-contract
             contractName="HeavenTicket"
-            method="isPateron"
+            method="isPatron"
             label="In heaven"
             :methodArgs="accounts"      
         /> 
