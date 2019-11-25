@@ -19,7 +19,7 @@ follow the instructions for your respective platform
 
 https://www.trufflesuite.com/ganache
 
-  [FANCY](https://media1.tenor.com/images/53063b73f6a39d86bfae9e6a30230779/tenor.gif)
+  ![FANCY](https://media1.tenor.com/images/53063b73f6a39d86bfae9e6a30230779/tenor.gif)
 
 
 #### 3) get saurce
@@ -66,4 +66,6 @@ run ui
 npm run serve
 ```
 
-#### moon
+#### Moon
+
+![moon](https://www.reactiongifs.com/r/giphy.gif)
