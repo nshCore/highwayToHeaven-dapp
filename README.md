@@ -19,7 +19,7 @@ follow the instructions for your respective platform
 
 https://www.trufflesuite.com/ganache
 
-  <img src="https://i.giphy.com/media/2BgfYUfSqDilW/giphy.webpg" width="400px" />
+  [FANCY](https://media1.tenor.com/images/53063b73f6a39d86bfae9e6a30230779/tenor.gif)
 
 
 #### 3) get saurce
