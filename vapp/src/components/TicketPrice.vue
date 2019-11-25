@@ -3,7 +3,7 @@
         <drizzle-contract
             contractName="HeavenTicket"
             method="getTicketPrice"
-            label="Ticket Price"
+            label="Ticket Price (wei)"
         /> 
     </div>   
 </template>

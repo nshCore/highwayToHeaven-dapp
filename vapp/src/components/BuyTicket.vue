@@ -24,7 +24,7 @@ export default {
     buyTicket: async function(event) {        
         if (this.isDrizzleInitialized) {
             const buyTicketMethod = this.drizzleInstance.contracts["HeavenTicket"].methods['buyTicket'];
-            buyTicketMethod.cacheSend({ value: "1" });
+            buyTicketMethod.cacheSend({ value: "1000000000000000000" });
         } else {
             alert("Drizzle doesn't seem to be initialised / ready");
         }

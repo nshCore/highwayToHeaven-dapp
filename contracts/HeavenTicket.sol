@@ -59,10 +59,10 @@ contract HeavenTicket is Ownable, ERC20, ERC20Detailed
         require(_initalSupply > 0, "﴾͡๏̯͡๏﴿ O'RLY?");
 
         // calc total supply
-        uint256 totalSupply_ = _initalSupply.mul(10 ** uint256(_decimals));
+        uint256 totalSupply_ = _initalSupply;
 
         // ticket price
-        ticketPrice = _ticketPrice.mul(10 ** uint256(_decimals));
+        ticketPrice = _ticketPrice;
 
         // mint inital supply for contract owner
         _mint(msg.sender, totalSupply_);
@@ -77,9 +77,9 @@ contract HeavenTicket is Ownable, ERC20, ERC20Detailed
     {
         address _senderAddress = _msgSender();
         require(!isOwner(), "sender can't be contract owner"); // should still be same logic as bellow
-        // require(_senderAddress != address(0), "sender can't be contract owner"); most places say to do this to prevent 0 adddress interaction but it doesnt seem to throw ex
-        require(msg.value == ticketPrice, "you need money to get into heaven");
+        require(msg.value == 1 ether, "you need money to get into heaven");
         require(!isGuestOnList(_senderAddress), "you can only go to heaven once");
+        require(!isPatron(_senderAddress), "you can't buy ticket when in heaven");
 
         // add user to list
         guestList[_senderAddress].guestId = guests.push(_senderAddress) - 1;
